@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.harvey.studio.alumni.business.dao">
+
+	<resultMap id="PersonPo"
+		type="com.harvey.studio.alumni.business.domain.PersonPo">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="student_no" property="studentNo" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="area" property="area" jdbcType="VARCHAR" />
+		<result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+		<result column="modified_time" property="modifiedTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="queryByClazz" parameterType="long" resultMap="PersonPo">
+		SELECT
+        `id`,
+		`student_no`,
+		`name`,
+		`city`,
+		`area`,
+		`created_time`,
+		`modified_time`
+        FROM  `tb_person`
+        where id in (select person_id from tb_person_clazz_rel where clazz_id = #{clazzId})
+	</select>
+	
+	<update id="update" parameterType="Instance">
+		UPDATE `cdse_tb_instance`
+		<set>
+			<if test="actionConf != null">
+				`action_conf` = #{actionConf},
+			</if>
+			<if test="runStartTime != null">
+				`run_start_time` = #{runStartTime},
+			</if>
+			<if test="runEndTime != null">
+				`run_end_time` = #{runEndTime},
+			</if>
+			<if test="state != 0">
+				`state` = #{state},
+			</if>
+			<if test="msg != null">
+				`msg` = #{msg},
+			</if>
+			<if test="eeId != null">
+				`ee_id` = #{eeId},
+			</if>
+			<if test="logUrl != null">
+				`log_url` = #{logUrl},
+			</if>
+			<if test="modifiedTime != null">
+				`modified_time` = #{modifiedTime},
+			</if>
+		</set>
+		WHERE `id` = #{id}
+	</update>
+
+	<update id="updateWithStateCheck">
+		UPDATE `cdse_tb_instance`
+		<set>
+			<if test="instance.actionConf != null">
+				`action_conf` = #{instance.actionConf},
+			</if>
+			<if test="instance.runStartTime != null">
+				`run_start_time` = #{instance.runStartTime},
+			</if>
+			<if test="instance.runEndTime != null">
+				`run_end_time` = #{instance.runEndTime},
+			</if>
+			<if test="instance.state != 0">
+				`state` = #{instance.state},
+			</if>
+			<if test="instance.msg != null">
+				`msg` = #{instance.msg},
+			</if>
+			<if test="instance.eeId != null">
+				`ee_id` = #{instance.eeId},
+			</if>
+			<if test="instance.logUrl != null">
+				`log_url` = #{instance.logUrl},
+			</if>
+			<if test="instance.modifiedTime != null">
+				`modified_time` = #{instance.modifiedTime},
+			</if>
+		</set>
+		WHERE `id` = #{instance.id} and state = #{state}
+	</update>
+
+	<insert id="add" parameterType="Instance" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO `cdse_tb_instance`
+		(`task_id`,
+		`version_id`,
+		`version_no`,
+		`launch_time`,
+		`action_conf`,
+		`run_start_time`,
+		`run_end_time`,
+		`state`,
+		`msg`,
+		`ee_id`,
+		`log_url`,
+		`created_time`,
+		`modified_time`)
+		VALUES (#{taskId},
+		#{versionId},
+		#{versionNo},
+		#{launchTime},
+		#{actionConf},
+		#{runStartTime},
+		#{runEndTime},
+		#{state},
+		#{msg},
+		#{eeId},
+		#{logUrl},
+		#{createdTime},
+		#{modifiedTime})
+	</insert>
+
+	<select id="queryByVersion" parameterType="long" resultMap="Instance">
+		SELECT
+		`id`,
+		`task_id`,
+		`version_id`,
+		`version_no`,
+		`launch_time`,
+		`action_conf`,
+		`run_start_time`,
+		`run_end_time`,
+		`state`,
+		`msg`,
+		`ee_id`,
+		`log_url`,
+		`created_time`,
+		`modified_time`
+		FROM `cdse_tb_instance`
+		where version_id = #{0}
+		order by version_no
+	</select>
+
+	<select id="queryByState" parameterType="int" resultMap="Instance">
+		SELECT
+		`id`,
+		`task_id`,
+		`version_id`,
+		`version_no`,
+		`launch_time`,
+		`action_conf`,
+		`run_start_time`,
+		`run_end_time`,
+		`state`,
+		`msg`,
+		`ee_id`,
+		`log_url`,
+		`created_time`,
+		`modified_time`
+		FROM `cdse_tb_instance`
+		where state = #{0}
+		order by version_no
+	</select>
+
+	<select id="queryByTaskId" parameterType="long" resultMap="Instance">
+		SELECT
+		`id`,
+		`task_id`,
+		`version_id`,
+		`version_no`,
+		`launch_time`,
+		`action_conf`,
+		`run_start_time`,
+		`run_end_time`,
+		`state`,
+		`msg`,
+		`ee_id`,
+		`log_url`,
+		`created_time`,
+		`modified_time`
+		FROM `cdse_tb_instance`
+		where task_id = #{taskId}
+	</select>
+
+	<select id="getLatestOfVersion" parameterType="long" resultMap="Instance">
+		SELECT
+		`id`,
+		`task_id`,
+		`version_id`,
+		`version_no`,
+		`launch_time`,
+		`action_conf`,
+		`run_start_time`,
+		`run_end_time`,
+		`state`,
+		`msg`,
+		`ee_id`,
+		`log_url`,
+		`created_time`,
+		`modified_time`
+		FROM `cdse_tb_instance`
+		where version_id = #{0}
+		order by id desc
+		limit 1
+	</select>
+
+	<delete id="deleteByTaskId" parameterType="long">
+		delete from cdse_tb_instance where task_id = #{0}
+	</delete>
+</mapper>

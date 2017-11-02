@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'
+    debug="true">
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %p %.200l %x --> %m%n" />
+        </layout>
+    </appender>
+    
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="E:\\deploy\\logs\\alumni.log" />
+
+        <param name="Threshold" value="DEBUG" />
+        <param name="MaxBackupIndex" value="2" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="100MB" />
+        <param name="encoding" value="UTF-8" />
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- The default pattern: Date Priority [Category] Messagen -->
+            <!-- <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] 
+                %m%n"/> -->
+            <!-- NOTE: %F:%M:%L (File:Method:Line) is useless because of the way Kettle 
+                logs messages. They always show up as coming from the LogWriter class. Also, 
+                it is expensive to generate the location information (although since there 
+                is only ever one location I imagine it gets cached and reused throughout 
+                the life of the application). <param name="ConversionPattern" value="%-5p 
+                %d{dd-MM HH:mm:ss,SSS} (%F:%M:%L) -%m%n"/> -->
+            <param name="ConversionPattern" value="%-5p %d{yyyy-MM-dd HH:mm:ss,SSS} %l - %m%n" />
+        </layout>
+    </appender>
+    
+    <!-- 设置各个package的日志级别 -->
+    <logger name="org.springframework">
+        <level value="DEBUG" />
+    </logger>
+    <logger name="org.quartz">
+        <level value="WARN" />
+    </logger>
+    <logger name="org.apache.ibatis">
+        <level value="WARN" />
+    </logger>
+    <logger name="org.mybatis">
+        <level value="WARN" />
+    </logger>
+    
+    <root>
+        <priority value="DEBUG" />
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+</log4j:configuration>
